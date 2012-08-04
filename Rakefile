@@ -1,4 +1,5 @@
 require 'rake'
+require 'active_record'
 
 desc 'setup'
 task :setup do
@@ -7,6 +8,11 @@ task :setup do
   circle_cuts_dir = File.expand_path('public/images/circle_cuts')
   Rake::Task['setup:create_directories'].invoke(circle_cuts_dir)
   Rake::Task['setup:copy_circle_cuts'].invoke(circle_cuts_dir, dvd_path)
+end
+
+desc 'update circle info'
+task :update do
+  url = 'http://www.kyoshin.net/catarom/update'
 end
 
 namespace :setup do
@@ -22,5 +28,11 @@ namespace :setup do
       FileUtils.copy(file, path)
       FileUtils.chmod(644, path)
     end
+  end
+
+  desc 'create database'
+  task :create_database do
+    require_relative 'db/helper'
+    ActiveRecord::Migrator.migrate('db/migrate/')
   end
 end
