@@ -21,18 +21,9 @@ namespace :setup do
   end
 
   task :copy_circle_cuts, :circle_cuts_dir, :dvd_path do |t, args|
-    base_dir = File.expand_path('DATA82/PDATA', args[:dvd_path])
-
-    Dir.glob(File.join(base_dir, '/*.PNG')) do |file|
-      path = File.join(args[:circle_cuts_dir], File.basename(file).downcase)
-      FileUtils.copy(file, path)
-      FileUtils.chmod(644, path)
-    end
+    zip = File.expand_path('DATA82N/C082CUTH.CCZ', args[:dvd_path])
+    `unzip #{zip} -d #{args[:circle_cuts_dir]}`
+    FileUtils.chmod(0644, Dir.glob(File.join(args[:circle_cuts_dir], '*')))
   end
 
-  desc 'create database'
-  task :create_database do
-    require_relative 'db/helper'
-    ActiveRecord::Migrator.migrate('db/migrate/')
-  end
 end
