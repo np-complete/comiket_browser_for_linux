@@ -8,10 +8,10 @@
     rake setup /media/cdrom
 
 ### run
-    ./app.rb (-p PORT_NUM ; default: 3000)
+    ./app.rb (-p PORT_NUM ; default: 4567)
 
 ### use
-    chromium-browser http://localhost:3000(OR PORT_NUM)/
+    chromium-browser http://localhost:4567(OR PORT_NUM)/
 
 ## Help!
 フロントのコード書ける人助けてください
