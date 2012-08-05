@@ -32,7 +32,8 @@ get '/circles' do
     :prev => (page == 0 ?
       {page: 0, day: day, block: block} : {page: page - 1, day: day, block: block}).reject{|k, v| v.nil?}
   }
-  {:cond => cond, :circles => circles}.to_json(root: nil)
+  info = { block: circles.first.block, day: day }
+  {info: info, cond: cond, circles: circles}.to_json(root: nil)
 end
 
 get '/help' do

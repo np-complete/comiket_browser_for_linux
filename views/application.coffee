@@ -9,9 +9,13 @@ image = (id) ->
     $("<img>").attr("src", "/images/circle_cuts/#{id}.png")
 
 update = (data) ->
+    update_page_info data['info']
     for circle, i in data['circles']
         update_cell(i, circle)
     reset_bind data['cond']
+
+update_page_info = (info) ->
+    $("#page_info").html $("<h1>").html("Day#{info['day']}: #{info['block']}")
 
 update_cell = (num, circle) ->
         img = image circle['id']
