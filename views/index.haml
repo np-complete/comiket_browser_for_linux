@@ -1,9 +1,12 @@
-.row
-  .span10
-    - 1.upto 4 do |x|
-      .row
-        - 1.upto 4 do |y|
-          .span2.circle_box{:id => "box_#{(x - 1) * 4 + (y - 1)}"}
-  .span2
-
+#main
+  .row
+    .span9
+      - 1.upto 4 do |x|
+        .row
+          - 1.upto 4 do |y|
+            .span2.circle_box{:id => "box_#{(x - 1) * 4 + (y - 1)}"}
+    #circle_info.span3
+      %h2#circle_name
+      #circle_cut
+      %p#circle_description
 %script{src: '/application.js', type: 'text/javascript'}

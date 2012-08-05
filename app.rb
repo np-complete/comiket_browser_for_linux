@@ -21,7 +21,7 @@ get '/circles' do
   @block = params[:block]
   @circles = Circle.limit(nums).offset(nums * @page).where(comiket_no: 82, day: @day)
   @circles = @circles.where(block: @block) if @block
-  cond = {page: @page, day: @day, block: @block}
+  cond = {page: @page, day: @day, block: @block}.reject{|k, v| v.nil?}
   {:cond => cond, :circles => @circles}.to_json(root: nil)
 end
 
