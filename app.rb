@@ -27,3 +27,7 @@ end
 get '/help' do
   haml :help
 end
+
+get '/application.js' do
+  coffee :application
+end
