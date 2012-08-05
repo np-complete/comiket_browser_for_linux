@@ -3,6 +3,9 @@
 
 require 'sinatra'
 require 'haml'
+require 'active_record'
+
+require_relative 'db/helper'
 
 get '/' do
   haml :index
