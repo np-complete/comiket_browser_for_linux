@@ -5,6 +5,7 @@ require 'sinatra'
 require 'haml'
 require 'json'
 require 'active_record'
+require 'sass'
 
 require_relative 'db/helper'
 
@@ -14,7 +15,7 @@ end
 
 get '/circles' do
   content_type :json
-  nums = 25
+  nums = 16
   @page = (params[:page] || 0).to_i
   @day = (params[:day] || 1).to_i
   @block = params[:block]
@@ -30,4 +31,8 @@ end
 
 get '/application.js' do
   coffee :application
+end
+
+get '/style.css' do
+  sass :style
 end

@@ -1,9 +1,9 @@
 .row
-  .span8
-    - 1.upto 5 do |x|
+  .span10
+    - 1.upto 4 do |x|
       .row
-        - 1.upto 5 do |y|
-          .span1.circle_box{:id => "box_#{(x - 1) * 5 + (y - 1)}"}
-  .span4
+        - 1.upto 4 do |y|
+          .span2.circle_box{:id => "box_#{(x - 1) * 4 + (y - 1)}"}
+  .span2
 
 %script{src: '/application.js', type: 'text/javascript'}
