@@ -1,5 +1,8 @@
+# -*- coding: utf-8 -*-
 require 'rake'
 require 'active_record'
+require 'kconv'
+require 'csv'
 
 desc 'setup'
 task :setup do
@@ -8,11 +11,52 @@ task :setup do
   circle_cuts_dir = File.expand_path('public/images/circle_cuts')
   Rake::Task['setup:create_directories'].invoke(circle_cuts_dir)
   Rake::Task['setup:copy_circle_cuts'].invoke(circle_cuts_dir, dvd_path)
+  Rake::Task['db:install'].invoke(dvd_path)
 end
 
-desc 'update circle info'
-task :update do
-  url = 'http://www.kyoshin.net/catarom/update'
+
+namespace :db do
+  task :migrate do
+    require_relative 'db/helper'
+    ActiveRecord::Migrator.migrate('db/migrate/')
+  end
+
+  desc 'install circle info'
+  task :install, :dvd_path do |t, args|
+    Rake::Task['db:migrate'].invoke
+    data_file = File.expand_path('DATA82/CDATA/C82ROM.TXT', args[:dvd_path])
+    days = {'金' => 1, '土' => 2, '日' => 3}
+    require_relative 'db/helper'
+
+    # Circle.delete_all
+    exists_ids = Circle.all.map(&:id)
+    # dirty quote_char
+    CSV.foreach(data_file, col_sep: "\t", encoding: 'sjis', quote_char: '$' ) do |row|
+      row.map! {|x| x.toutf8 if x.instance_of? String }
+      attrs = {}
+      attrs[:id]          = row[0].to_i
+      if exists_ids.include?(attrs[:id])
+        print 's'
+      else
+        attrs[:comiket_no]  = 82
+        attrs[:day]         = days[row[3]]
+        attrs[:area]        = row[4]
+        attrs[:block]       = row[5]
+        attrs[:space_no]    = row[6].try(:to_i)
+        attrs[:name]        = row[8]
+        attrs[:author]      = row[10]
+        attrs[:book]        = row[11]
+        attrs[:description] = row[14]
+        Circle.create!(attrs)
+        print '.'
+      end
+    end
+  end
+
+  desc 'update circle info'
+  task :update => :migrate do
+    url = 'http://www.kyoshin.net/catarom/update'
+  end
 end
 
 namespace :setup do
