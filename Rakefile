@@ -14,6 +14,22 @@ task :setup do
   Rake::Task['db:install'].invoke(dvd_path)
 end
 
+namespace :checklist do
+  require_relative 'db/helper'
+  desc 'load checklist csv file'
+  task :load, :filepath do |t, args|
+    require_relative 'lib/checklist_parser'
+    path = File.expand_path(args[:filepath])
+    CSV.open(path, :encoding => NKF.guess(File.read(path))) do |csv|
+      parser = ChecklistParser.parse(csv)
+    end
+  end
+
+  desc 'dump checklist csv file'
+  task :dump, :filepath do
+
+  end
+end
 
 namespace :db do
   task :migrate do
