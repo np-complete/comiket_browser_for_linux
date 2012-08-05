@@ -26,11 +26,9 @@ reset_bind = (cond) ->
         c = String.fromCharCode e.which
         switch c
             when "N"
-                cond['page'] += 1
-                view_circles cond
+                view_circles cond['next']
             when "P"
-                cond['page'] -= 1
-                view_circles cond
+                view_circles cond['prev']
 
 view = (circle) ->
     $("#circle_name").html circle['name']
@@ -45,7 +43,6 @@ generate_links = ->
                 a.html(area)
                 a.click ->
                     view_circles {day: day, page: 0, block: block}
-                console.log a
                 $("#links").append(a).append(" ")
             for day in [1,2,3]
                 $("#links").append("Day#{day}: ")
