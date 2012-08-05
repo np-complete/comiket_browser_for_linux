@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-
+# -*- coding: utf-8 -*-
 
 require 'sinatra'
 require 'haml'
@@ -35,4 +35,9 @@ end
 
 get '/style.css' do
   sass :style
+end
+
+get '/areas' do
+  content_type :json
+  {"E1-3" => "Ａ", "E4-6" => "シ", "W1-2" => "あ"}.to_json
 end

@@ -37,8 +37,24 @@ view = (circle) ->
     $("#circle_description").html circle['description']
     $("#circle_cut").html image(circle['id'])
 
+generate_links = ->
+    $.ajax '/areas',
+        success: (data) ->
+            build = (day, area, block) ->
+                a = $("<a>").attr("href", "#")
+                a.html(area)
+                a.click ->
+                    view_circles {day: day, page: 0, block: block}
+                console.log a
+                $("#links").append(a).append(" ")
+            for day in [1,2,3]
+                $("#links").append("Day#{day}: ")
+                for area, block of data
+                    build day, area, block
+
 init = ->
     cond = {day: 1, page: 0}
+    generate_links()
     view_circles(cond)
 $(document).ready ->
     init()
