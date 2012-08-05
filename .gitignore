@@ -1,2 +1,2 @@
 public/images/circle_cuts
-db/*.sqlite3
+db/*.sqlite3*
