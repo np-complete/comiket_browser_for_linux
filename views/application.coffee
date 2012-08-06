@@ -21,7 +21,7 @@ update_page_info = (info) ->
 update_cell = (num, circle) ->
     img = image circle.id
     a = $("<a>").attr("href", "#").html img
-    box = $("<div>").append(a).append("#{circle.block.name} #{circle.space_no} #{circle.name}")
+    box = $("<div>").append(a).append("#{circle.block.name} #{circle.space_no} #{circle.author}")
     $("#box_#{num}").html(box)
     a.click ->
         view(circle)
