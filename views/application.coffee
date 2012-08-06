@@ -52,7 +52,13 @@ generate_links = ->
                 $("#links").append("Day#{day}: ")
                 for area, block of data
                     build day, area, block
-
+    $.ajax '/blocks',
+        success: (blocks) ->
+            select = $("#select_block")
+            for block in blocks
+               select.append $("<option>").attr("value", block[0]).html(block[1])
+    $("form#selects").change ->
+        view_circles {day: $("#select_day").val(), block_id: $("#select_block").val()}
 init = ->
     cond = {day: 1, page: 0}
     generate_links()

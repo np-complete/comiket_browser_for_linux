@@ -55,3 +55,8 @@ get '/areas' do
   content_type :json
   {"E1-3" => 1, "E4-6" => 38, "W1-2" => 75}.to_json
 end
+
+get '/blocks' do
+  content_type :json
+  Block.all.map{|x| [x.id, x.name]}.to_json
+end
