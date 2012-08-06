@@ -29,9 +29,20 @@ class ChecklistParser
   end
 
   def parse_circle(row)
+    Checklist.create(circle_id: row[1].to_i, color_id: row[2].to_i, memo: row[17]) unless checked_circles.include?(row[1].to_i)
   end
 
   def parse_unknown(row)
+    if convert_mode
+      circle = Circle.find_by_name(row[1]) || Circle.find_by_author(row[3])
+      if circle
+        Checklist.create(circle_id: circle.id, color_id: row[5].to_i, memo: row[4]) unless checked_circles.include?(circle.id)
+      end
+    end
+  end
+
+  def checked_circles
+    @checked_circles ||= Checklist.all.map(&:circle_id)
   end
 
   def self.parse(csv)
@@ -42,7 +53,7 @@ class ChecklistParser
         parser.parse_circle(row)
       when 'Color'
         parser.parse_color(row)
-      when 'Unknown'
+      when 'UnKnown'
         parser.parse_unknown(row)
       when 'Header'
         parser.parse_header(row)

@@ -65,3 +65,19 @@ get '/colors' do
   content_type :json
   Hash[Color.all.map{|x| [x.id.to_i, x.color]}].to_json
 end
+
+get '/checklists' do
+  content_type :json
+  Checklist.all.to_json(root: nil, :only => [:circle_id, :color_id, :memo])
+end
+
+post '/checklists' do
+  content_type :json
+  Checklist.create(params[:checklist]).to_json
+end
+
+put '/checklists/:id' do
+  content_type :json
+  checklist = Checklist.find_by_circle_id(params[:id])
+  checklist.update_attributes(params[:checklist]).to_json
+end
