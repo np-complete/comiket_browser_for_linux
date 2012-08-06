@@ -22,7 +22,7 @@ get '/circles' do
 
   offset = nums * page
 
-  circles = Circle.includes(:block).order('block_id, space_no').where(comiket_no: 82, day: day)
+  circles = Circle.includes([:block, :checklist]).order('block_id, space_no').where(comiket_no: 82, day: day)
 
   circles = circles.where(block_id: block_id) if block_id
   total_count = circles.count
@@ -36,7 +36,7 @@ get '/circles' do
   }
 
   info = { block: Block.find(circles.first.block_id).name, day: day }
-  {info: info, cond: cond, circles: circles}.to_json(root: nil)
+  {info: info, cond: cond, circles: circles}.to_json(:include => [:checklist, :block])
 end
 
 get '/help' do
@@ -71,13 +71,20 @@ get '/checklists' do
   Checklist.all.to_json(root: nil, :only => [:circle_id, :color_id, :memo])
 end
 
-post '/checklists' do
+put '/checklists/:id/:color_id' do
   content_type :json
-  Checklist.create(params[:checklist]).to_json
+  if Checklist.exists?(:circle_id => params[:id])
+    checklist = Checklist.find_by_circle_id(params[:id])
+    checklist.update_attributes(color_id: params[:color_id])
+    checklist.to_json
+  else
+    Checklist.create(circle_id: params[:id], color_id: params[:color_id]).to_json
+  end
 end
 
-put '/checklists/:id' do
+delete '/checklists/:id' do
   content_type :json
   checklist = Checklist.find_by_circle_id(params[:id])
-  checklist.update_attributes(params[:checklist]).to_json
+  checklist.destroy if checklist
+  checklist.to_json
 end
