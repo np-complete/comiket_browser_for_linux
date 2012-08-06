@@ -42,11 +42,11 @@ view = (circle) ->
 generate_links = ->
     $.ajax '/areas',
         success: (data) ->
-            build = (day, area, block) ->
+            build = (day, area, block_id) ->
                 a = $("<a>").attr("href", "#")
                 a.html(area)
                 a.click ->
-                    view_circles {day: day, page: 0, block: block}
+                    view_circles {day: day, page: 0, block_id: block_id}
                 $("#links").append(a).append(" ")
             for day in [1,2,3]
                 $("#links").append("Day#{day}: ")

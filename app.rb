@@ -18,21 +18,24 @@ get '/circles' do
   nums = 16
   page = (params[:page] || 0).to_i
   day = (params[:day] || 1).to_i
-  block = params[:block]
+  block_id = params[:block_id].try(:to_i)
 
   offset = nums * page
 
-  circles = Circle.where(comiket_no: 82, day: day)
-  circles = circles.where(block: block) if block
+  circles = Circle.order('block_id, space_no').where(comiket_no: 82, day: day)
+
+  circles = circles.where(block_id: block_id) if block_id
   total_count = circles.count
   circles = circles.limit(nums).offset(offset)
+
   cond = {
-    :next => (total_count < offset + nums ?
-      {page: 0, day: day, block: block + 1} : {page: page + 1, day: day, block: block}).reject{|k, v| v.nil?},
+    :next => (total_count <= offset + nums ?
+      {page: 0, day: day, block_id: block_id.try(:+, 1)} : {page: page + 1, day: day, block_id: block_id}).reject{|k, v| v.nil?},
     :prev => (page == 0 ?
-      {page: 0, day: day, block: block} : {page: page - 1, day: day, block: block}).reject{|k, v| v.nil?}
+      {page: 0, day: day, block_id: block_id.try(:-, 1)} : {page: page - 1, day: day, block_id: block_id}).reject{|k, v| v.nil?}
   }
-  info = { block: circles.first.block, day: day }
+
+  info = { block: Block.find(circles.first.block_id).name, day: day }
   {info: info, cond: cond, circles: circles}.to_json(root: nil)
 end
 
@@ -50,5 +53,5 @@ end
 
 get '/areas' do
   content_type :json
-  {"E1-3" => "Ａ", "E4-6" => "シ", "W1-2" => "あ"}.to_json
+  {"E1-3" => 1, "E4-6" => 38, "W1-2" => 75}.to_json
 end

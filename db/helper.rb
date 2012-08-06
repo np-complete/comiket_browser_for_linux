@@ -2,6 +2,7 @@ ActiveRecord::Base.establish_connection(:adapter => 'sqlite3', :database => 'db/
 
 class Circle < ActiveRecord::Base
   attr_accessible :id, :name, :book, :description, :block_id, :comiket_no, :day, :space_no, :author
+  belongs_to :block
 end
 
 class Color < ActiveRecord::Base
