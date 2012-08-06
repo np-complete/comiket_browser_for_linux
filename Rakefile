@@ -37,10 +37,20 @@ namespace :db do
     ActiveRecord::Migrator.migrate('db/migrate/')
   end
 
+  task :install_block, :dvd_path do |t, args|
+    Rake::Task['db:migrate'].invoke
+    data_file = File.expand_path('DATA82/CDATA/C82MAP.TXT', args[:dvd_path])
+    CSV.open(data_file, col_sep: "\t", encoding: 'sjis') do |csv|
+      blocks = csv.readlines.map{|row| row[0].toutf8 }.uniq
+      blocks.each{ |block| Block.create(:name => block) }
+    end
+  end
+
   desc 'install circle info'
   task :install, :dvd_path do |t, args|
     Rake::Task['db:migrate'].invoke
     data_file = File.expand_path('DATA82/CDATA/C82ROM.TXT', args[:dvd_path])
+    blocks = Block.all.map {|x| [x.name, x.id]}
     days = {'金' => 1, '土' => 2, '日' => 3}
     require_relative 'db/helper'
 
@@ -54,16 +64,16 @@ namespace :db do
       if exists_ids.include?(attrs[:id])
         print 's'
       else
+        block = blocks.assoc(row[5])
         attrs[:comiket_no]  = 82
         attrs[:day]         = days[row[3]]
-        attrs[:area]        = row[4]
-        attrs[:block]       = row[5]
+        attrs[:block_id]    = block.id if block
         attrs[:space_no]    = row[6].try(:to_i)
         attrs[:name]        = row[8]
         attrs[:author]      = row[10]
         attrs[:book]        = row[11]
         attrs[:description] = row[14]
-        Circle.create!(attrs)
+        Circle.create(attrs)
         print '.'
       end
     end

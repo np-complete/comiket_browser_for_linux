@@ -3,8 +3,7 @@ class CreateCircle < ActiveRecord::Migration
     create_table :circles do |t|
       t.integer :comiket_no
       t.integer :day
-      t.string  :area
-      t.string  :block
+      t.integer :block_id
       t.integer :space_no
       t.string  :name
       t.string  :author
@@ -13,7 +12,7 @@ class CreateCircle < ActiveRecord::Migration
       t.timestamps
     end
     add_index :circles, :name
-    add_index :circles, [:comiket_no, :day, :area, :block, :space_no], :name => :circle_space
+    add_index :circles, [:comiket_no, :day, :block_id, :space_no], :name => :circle_space
   end
 end
 
