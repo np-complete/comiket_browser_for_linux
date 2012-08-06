@@ -22,7 +22,7 @@ get '/circles' do
 
   offset = nums * page
 
-  circles = Circle.order('block_id, space_no').where(comiket_no: 82, day: day)
+  circles = Circle.includes(:block).order('block_id, space_no').where(comiket_no: 82, day: day)
 
   circles = circles.where(block_id: block_id) if block_id
   total_count = circles.count
@@ -59,4 +59,9 @@ end
 get '/blocks' do
   content_type :json
   Block.all.map{|x| [x.id, x.name]}.to_json
+end
+
+get '/colors' do
+  content_type :json
+  Hash[Color.all.map{|x| [x.id.to_i, x.color]}].to_json
 end
