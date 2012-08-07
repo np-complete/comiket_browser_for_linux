@@ -32,15 +32,15 @@ checker_event = (e) ->
         key = e.which
         if 49 <= key && key <= 57 # number
             color_id = key - 48
+            $("#circle_name").css('background-color', "##{colors[color_id]}")
             $.ajax "/checklists/#{selected}/#{color_id}",
                 type: 'PUT',
                 success: (data) ->
-                    $("#circle_name").css('background-color', "##{colors[color_id]}")
         else if key == 27 || key == 8 || key == 48 # del , escape, 0
+            $("#circle_name").css('background-color', '#ffffff')
             $.ajax "/checklists/#{selected}",
                 type: 'DELETE',
                 success: (data) ->
-                    $("#circle_name").css('background-color', '#ffffff')
 selected = null
 
 reset_bind = (cond) ->
