@@ -93,8 +93,9 @@ colors = {}
 load_colors = ->
      $.ajax '/colors',
         success: (res) ->
-            for k, val of res
-                colors[k] = val
+            for color_id, color of res
+                colors[color_id] = color.color
+                $("#colors").append $("<div>").css("border", "4px solid ##{color.color}").html("#{color_id} #{color.title}")
 
 init = ->
     cond = {day: 1, page: 0}

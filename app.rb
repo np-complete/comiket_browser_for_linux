@@ -63,7 +63,7 @@ end
 
 get '/colors' do
   content_type :json
-  Hash[Color.all.map{|x| [x.id.to_i, x.color]}].to_json
+  Hash[Color.all.map{|x| [x.id.to_i, {color: x.color, title: x.title}]}].to_json
 end
 
 get '/checklists' do
