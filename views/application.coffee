@@ -25,19 +25,22 @@ update_cell = (num, circle) ->
     $("#box_#{num}").html(box)
     a.click ->
         view(circle)
-    box.css("background-color", "##{colors[circle.checklist.color_id]}") if circle.checklist
+    box.css("background-color", "#{colors[circle.checklist.color_id]}") if circle.checklist
+
+coloring_circle_info = (color) ->
+    $("#circle_info").css('border-color', "#{color}")
 
 checker_event = (e) ->
     if selected
         key = e.which
         if 49 <= key && key <= 57 # number
             color_id = key - 48
-            $("#circle_name").css('background-color', "##{colors[color_id]}")
+            coloring_circle_info colors[color_id]
             $.ajax "/checklists/#{selected}/#{color_id}",
                 type: 'PUT',
                 success: (data) ->
         else if key == 27 || key == 8 || key == 48 # del , escape, 0
-            $("#circle_name").css('background-color', '#ffffff')
+            coloring_circle_info ''
             $.ajax "/checklists/#{selected}",
                 type: 'DELETE',
                 success: (data) ->
@@ -58,11 +61,10 @@ view = (circle) ->
     selected = circle.id
     $("body").unbind('keydown', 'checker_event')
     $("#circle_name").html circle.name
-    color = if circle.checklist
-        colors[circle.checklist.color_id]
+    if circle.checklist
+        coloring_circle_info colors[circle.checklist.color_id]
     else
-        "ffffff"
-    $("#circle_name").css("background-color", "##{color}")
+        coloring_circle_info ''
     $("#circle_description").html circle.description
     $("#circle_cut").html image(circle.id)
     $("#circle_author").html circle.author
@@ -95,7 +97,7 @@ load_colors = ->
         success: (res) ->
             for color_id, color of res
                 colors[color_id] = color.color
-                $("#colors").append $("<div>").css("border", "4px solid ##{color.color}").html("#{color_id} #{color.title}")
+                $("#colors").append $("<div>").css("border", "4px solid #{color.color}").html("#{color_id} #{color.title}")
 
 init = ->
     cond = {day: 1, page: 0}
