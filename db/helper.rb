@@ -14,10 +14,18 @@ end
 
 class Checklist < ActiveRecord::Base
   attr_accessible :circle_id, :comiket_no, :color_id, :memo
-  validates :circle_id, uniqueness: true
+  validates :circle_id, uniqueness: {:scope => :comiket_no}
+  validates :comiket_no, presence: true
+  belongs_to :circle
 end
 
 class Block < ActiveRecord::Base
   attr_accessible :name
   validates :name, uniqueness: true
+end
+
+class Unknown < ActiveRecord::Base
+  attr_accessible :name, :author, :color_id, :memo
+  validates :name, presence: true
+  validates :author, presence: true
 end

@@ -29,24 +29,28 @@ class ChecklistParser
   end
 
   def parse_circle(row)
-    Checklist.create(circle_id: row[1].to_i, color_id: row[2].to_i, memo: row[17]) unless checked_circles.include?(row[1].to_i)
+    if convert_mode
+      convert_from_old_data(row[10], row[12], row[2], row[17])
+    else
+      Checklist.create(circle_id: row[1].to_i, color_id: row[2].to_i, memo: row[17]) unless checked_circles.include?(row[1].to_i)
+    end
   end
 
   def parse_unknown(row)
     if convert_mode
-      circle = Circle.find_by_name(row[1]) || Circle.find_by_author(row[3])
-      if circle
-        Checklist.create(circle_id: circle.id, color_id: row[5].to_i, memo: row[4]) unless checked_circles.include?(circle.id)
-      end
+      convert_from_old_data(row[1], row[3], row[5], row[4])
+    else
+      #none
     end
   end
 
   def checked_circles
-    @checked_circles ||= Checklist.all.map(&:circle_id)
+    @checked_circles ||= Checklist.where(comiket_no: 82).map(&:circle_id)
   end
 
   def self.parse(csv)
     parser = ChecklistParser.new
+    Checklist.where(comiket_no: 82).destroy_all
     csv.each do |row|
       case row[0]
       when 'Circle'
@@ -60,5 +64,15 @@ class ChecklistParser
       end
     end
     parser
+  end
+
+  private
+  def convert_from_old_data(name, author, color_id, memo)
+    circle = Circle.find_by_name(name) || Circle.find_by_author(author)
+    if circle
+      Checklist.create(circle_id: circle.id, color_id: color_id.to_i, memo: memo, comiket_no: 82)  unless checked_circles.include?(circle.id)
+    else
+      Unknown.create(name: name, author: author, color_id: color_id, memo: memo)
+    end
   end
 end
