@@ -1,9 +1,69 @@
+
+prev_circles = current_circles = next_circles = null
+prev_cond = current_cond = next_cond = null
+prev_info = current_info = next_info = null
+
+update_circle_view = ->
+    $("#page_info").html $("<h1>").html("Day#{current_info.day}: #{current_info.block}")
+    if current_circles
+        for circle, i in current_circles
+            update_cell(i, circle)
+
+fetch_circles_as_next = (cond = {}) ->
+    fetch_circles cond, (data) ->
+        next_circles = data.circles
+        next_cond = data.cond
+        next_info = data.info
+
+fetch_circles_as_prev = (cond = {}) ->
+    fetch_circles cond, (data) ->
+        prev_circles = data.circles
+        prev_cond = data.cond
+        prev_info = data.info
+
+fetch_circles_as_current = (cond = {}, func = null) ->
+    fetch_circles cond, (data) ->
+        current_circles = data.circles
+        current_info = data.info
+        current_cond = data.cond
+        func(data) if func
+
 view_circles = (cond = {}) ->
+    fetch_circles_as_current cond, (data) ->
+        update_circle_view()
+        fetch_circles_as_prev current_cond.prev
+        fetch_circles_as_next current_cond.next
+
+fetch_circles = (cond = {}, func) ->
     $.ajax '/circles',
         type: 'GET',
         data: cond,
         success: (data) ->
-            update(data)
+            func(data)
+
+move_next = ->
+    if next_circles
+        prev_circles = current_circles
+        current_circles = next_circles
+        fetch_circles_as_next next_cond.next
+        next_circles = null
+        prev_info = current_info
+        prev_cond = current_cond
+        current_info = next_info
+        current_cond = next_cond
+        update_circle_view()
+
+move_prev = ->
+    if prev_circles
+        next_circles = current_circles
+        current_circles = prev_circles
+        fetch_circles_as_prev prev_cond.prev
+        prev_circles = null
+        next_info = current_info
+        next_cond = current_cond
+        current_info = prev_info
+        current_cond = prev_cond
+        update_circle_view()
 
 image = (id) ->
     $("<img>").attr("src", "/images/circle_cuts/#{id}.png")
@@ -13,10 +73,6 @@ update = (data) ->
     update_page_info data.info
     for circle, i in data.circles
         update_cell(i, circle)
-    reset_bind data.cond
-
-update_page_info = (info) ->
-    $("#page_info").html $("<h1>").html("Day#{info.day}: #{info.block}")
 
 update_cell = (num, circle) ->
     img = image circle.id
@@ -36,6 +92,7 @@ checker_event = (e) ->
         if 49 <= key && key <= 57 # number
             color_id = key - 48
             coloring_circle_info colors[color_id]
+            console.log color_id
             $.ajax "/checklists/#{selected}/#{color_id}",
                 type: 'PUT',
                 success: (data) ->
@@ -46,15 +103,14 @@ checker_event = (e) ->
                 success: (data) ->
 selected = null
 
-reset_bind = (cond) ->
-    $("body").unbind('keydown')
+bind_keys = (cond) ->
     $("body").keydown (e) ->
         c = String.fromCharCode e.which
         switch c
             when "N"
-                view_circles cond.next
+                move_next()
             when "P"
-                view_circles cond.prev
+                move_prev()
     $("body").keydown checker_event
 
 view = (circle) ->
@@ -103,6 +159,7 @@ init = ->
     cond = {day: 1, page: 0}
     load_colors()
     generate_links()
-    view_circles(cond)
+    view_circles cond
+    bind_keys()
 $(document).ready ->
     init()
