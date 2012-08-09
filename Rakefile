@@ -56,26 +56,30 @@ namespace :db do
     require_relative 'db/helper'
 
     # Circle.delete_all
-    exists_ids = Circle.all.map(&:id)
-    # dirty quote_char
     CSV.foreach(data_file, col_sep: "\t", encoding: 'sjis', quote_char: '$' ) do |row|
       row.map! {|x| x.toutf8 if x.instance_of? String }
+      circle = Circle.find_by_circle_id_and_comiket_no(row[0].to_i, 82)
       attrs = {}
-      attrs[:id]          = row[0].to_i
-      if exists_ids.include?(attrs[:id])
-        print 's'
+      attrs[:circle_id]          = row[0].to_i
+      block = blocks.assoc(row[5])
+      attrs[:comiket_no]  = 82
+      attrs[:page]        = row[1]
+      attrs[:cut_index]   = row[2]
+      attrs[:day]         = days[row[3]]
+      attrs[:block_id]    = block[1] if block
+      attrs[:space_no]    = row[6].try(:to_i)
+      attrs[:genre_code]  = row[7].try(:to_i)
+      attrs[:name]        = row[8]
+      attrs[:name_kana]   = row[9]
+      attrs[:author]      = row[10]
+      attrs[:book]        = row[11]
+      attrs[:description] = row[14]
+      if circle
+        circle.update_attributes(attrs)
+        print 'U'
       else
-        block = blocks.assoc(row[5])
-        attrs[:comiket_no]  = 82
-        attrs[:day]         = days[row[3]]
-        attrs[:block_id]    = block.id if block
-        attrs[:space_no]    = row[6].try(:to_i)
-        attrs[:name]        = row[8]
-        attrs[:author]      = row[10]
-        attrs[:book]        = row[11]
-        attrs[:description] = row[14]
         Circle.create(attrs)
-        print '.'
+        print 'C'
       end
     end
   end

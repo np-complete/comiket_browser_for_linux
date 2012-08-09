@@ -2,7 +2,7 @@ ActiveRecord::Base.establish_connection(:adapter => 'sqlite3', :database => 'db/
 ActiveRecord::Base.include_root_in_json = false
 
 class Circle < ActiveRecord::Base
-  attr_accessible :id, :name, :book, :description, :block_id, :comiket_no, :day, :space_no, :author
+  attr_accessible :circle_id, :name, :name_kana, :book, :description, :block_id, :comiket_no, :day, :space_no, :author, :page, :cut_index, :genre_code
   belongs_to :block
   has_one :checklist
 
