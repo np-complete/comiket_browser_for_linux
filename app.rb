@@ -76,10 +76,10 @@ put '/checklists/:id/:color_id' do
   if Checklist.exists?(:circle_id => params[:id])
     checklist = Checklist.find_by_circle_id(params[:id])
     checklist.update_attributes(color_id: params[:color_id])
-    checklist.to_json
   else
-    Checklist.create(circle_id: params[:id], color_id: params[:color_id]).to_json
+    checklist = Checklist.create(circle_id: params[:id], color_id: params[:color_id], comiket_no: 82)
   end
+  checklist.to_json
 end
 
 delete '/checklists/:id' do
