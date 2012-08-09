@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 require 'csv'
 class ChecklistDumper
-  def self.dump(file)
-    CSV.open(file, 'w') do |csv|
+  def self.dump
+    CSV do |csv|
       csv << ["Header","ComicMarketCD-ROMCatalog","ComicMarket82","UTF-8","LinCCV"]
       days = %w{× 金 土 日}
       west_block_id = Block.find_by_name('あ').id
@@ -10,18 +10,19 @@ class ChecklistDumper
         csv << ["Color", color.id, color.color, color.color, color.title]
       end
       Checklist.joins(:circle).each do |check|
-        block = case check.circle.block
+        space = case check.circle.block
                 when nil
-                  {block: '×', area: '×'}
+                  {block: '×', area: '×', space_no: 'XX'}
                 else
                   {
             block: check.circle.block.name,
-            area: check.circle.block.id.to_i >= west_block_id ? '西' : '東'
+            area: check.circle.block.id.to_i >= west_block_id ? '西' : '東',
+            space_no: check.circle.space_no.to_i
           }
                 end
 
         csv << ["Circle", check.circle_id, check.color_id, nil, nil,
-          days[check.circle.day.to_i], block[:area], block[:block], check.circle.space_no, nil,
+          days[check.circle.day.to_i], space[:area], space[:block], space[:space_no], nil,
           check.circle.name, nil, check.circle.author, nil, nil, nil, nil,
           check.memo, nil, nil, nil, nil, nil, nil, nil, nil]
       end

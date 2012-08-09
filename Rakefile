@@ -26,9 +26,9 @@ namespace :checklist do
   end
 
   desc 'dump checklist csv file'
-  task :dump, :filepath do |t, args|
+  task :dump do |t, args|
     require_relative 'lib/checklist_dumper'
-    ChecklistDumper.dump args[:filepath]
+    ChecklistDumper.dump
   end
 end
 
