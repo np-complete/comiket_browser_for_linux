@@ -50,7 +50,6 @@ class ChecklistParser
 
   def self.parse(csv)
     parser = ChecklistParser.new
-    Checklist.where(comiket_no: 82).destroy_all
     csv.each do |row|
       case row[0]
       when 'Circle'

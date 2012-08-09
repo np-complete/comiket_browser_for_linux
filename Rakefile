@@ -52,7 +52,7 @@ namespace :db do
     Rake::Task['db:migrate'].invoke
     data_file = File.expand_path('DATA82/CDATA/C82ROM.TXT', args[:dvd_path])
     blocks = Block.all.map {|x| [x.name, x.id]}
-    days = {'金' => 1, '土' => 2, '日' => 3}
+    days = {'×' => 0, '金' => 1, '土' => 2, '日' => 3}
     require_relative 'db/helper'
 
     # Circle.delete_all
