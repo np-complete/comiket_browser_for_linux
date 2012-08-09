@@ -12,22 +12,27 @@ class ChecklistDumper
       Checklist.joins(:circle).each do |check|
         space = case check.circle.block
                 when nil
-                  {block: '×', area: '×', space_no: 'XX'}
+                  {page: nil, cut_index: nil, block: '×', area: '×', space_no: 'XX'}
                 else
                   {
+            page: check.circle.page.to_i,
+            cut_index: check.circle.cut_index.to_i,
             block: check.circle.block.name,
             area: check.circle.block.id.to_i >= west_block_id ? '西' : '東',
             space_no: check.circle.space_no.to_i
           }
                 end
 
-        csv << ["Circle", check.circle_id, check.color_id, nil, nil,
-          days[check.circle.day.to_i], space[:area], space[:block], space[:space_no], nil,
-          check.circle.name, nil, check.circle.author, nil, nil, nil, nil,
+        csv << ["Circle", check.circle_id, check.color_id,
+          space[:page], space[:cut_index],
+          days[check.circle.day.to_i], space[:area], space[:block], space[:space_no],
+          check.circle.genre_code.to_i,
+          check.circle.name, check.circle.name_kana, check.circle.author, nil, nil, nil, nil,
           check.memo, nil, nil, nil, nil, nil, nil, nil, nil]
       end
       Unknown.all.each do |unknown|
-        csv << ["UnKnown", unknown.name, nil, unknown.author, unknown.memo, unknown.color_id]
+        csv << ["UnKnown", unknown.name, 'a', unknown.author, unknown.memo, unknown.color_id,
+          nil, nil, nil, nil, nil, nil, nil]
       end
     end
   end
