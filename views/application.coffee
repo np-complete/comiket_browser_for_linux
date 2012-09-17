@@ -1,7 +1,11 @@
+rows = 1
+
 
 prev_circles = current_circles = next_circles = null
 prev_cond = current_cond = next_cond = null
 prev_info = current_info = next_info = null
+
+cursor = 0
 
 update_circle_view = ->
     $("#page_info").html $("<h1>").html("Day#{current_info.day}: #{current_info.block}")
@@ -52,6 +56,7 @@ move_next = ->
         current_info = next_info
         current_cond = next_cond
         update_circle_view()
+        reset_cursor
 
 move_prev = ->
     if prev_circles
@@ -64,6 +69,13 @@ move_prev = ->
         current_info = prev_info
         current_cond = prev_cond
         update_circle_view()
+        reset_cursor
+
+move_cursor = (dir) ->
+    console.log dir
+
+reset_cursor = ->
+    cursor = 0
 
 image = (id) ->
     $("<img>").attr("src", "/images/circle_cuts/#{id}.png")
@@ -111,6 +123,14 @@ bind_keys = (cond) ->
                 move_next()
             when "P"
                 move_prev()
+            when "J"
+                move_cursor "down"
+            when "K"
+                move_cursor "up"
+            when "H"
+                move_cursor "left"
+            when "L"
+                move_cursor "right"
     $("body").keydown checker_event
 
 view = (circle) ->
