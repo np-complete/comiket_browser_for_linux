@@ -1,5 +1,4 @@
-rows = 1
-
+columns = 4
 
 prev_circles = current_circles = next_circles = null
 prev_cond = current_cond = next_cond = null
@@ -7,11 +6,13 @@ prev_info = current_info = next_info = null
 
 cursor = 0
 
-update_circle_view = ->
+update_circles_view = ->
     $("#page_info").html $("<h1>").html("Day#{current_info.day}: #{current_info.block}")
     if current_circles
+        $("#circles").html("")
         for circle, i in current_circles
-            update_cell(i, circle)
+            $("#circles").append generate_cell(i, circle)
+        reset_cursor()
 
 fetch_circles_as_next = (cond = {}) ->
     fetch_circles cond, (data) ->
@@ -34,7 +35,7 @@ fetch_circles_as_current = (cond = {}, func = null) ->
 
 view_circles = (cond = {}) ->
     fetch_circles_as_current cond, (data) ->
-        update_circle_view()
+        update_circles_view()
         fetch_circles_as_prev current_cond.prev
         fetch_circles_as_next current_cond.next
 
@@ -55,7 +56,7 @@ move_next = ->
         prev_cond = current_cond
         current_info = next_info
         current_cond = next_cond
-        update_circle_view()
+        update_circles_view()
         reset_cursor
 
 move_prev = ->
@@ -68,52 +69,72 @@ move_prev = ->
         next_cond = current_cond
         current_info = prev_info
         current_cond = prev_cond
-        update_circle_view()
+        update_circles_view()
         reset_cursor
 
 move_cursor = (dir) ->
-    console.log dir
+    switch dir
+        when "up"
+            if cursor > columns
+                select_cursor(cursor - columns)
+            else
+                move_prev()
+        when "down"
+            if cursor + columns < current_circles.length
+                select_cursor(cursor + columns)
+            else
+                move_next()
+        when "left"
+            if cursor > 0
+                select_cursor(cursor - 1)
+            else
+                move_prev()
+        when "right"
+            if cursor + 1 < current_circles.length
+                select_cursor(cursor + 1)
+            else
+                move_next()
 
 reset_cursor = ->
-    cursor = 0
+    select_cursor 0
 
-image = (id) ->
+select_cursor = (num) ->
+    cursor = num
+    $(".circle-box").removeClass "selected-circle"
+    $("#circle_index_#{num} .circle-box").addClass "selected-circle"
+    view current_circles[cursor]
+
+circle_cut_tag = (id) ->
     $("<img>").attr("src", "/images/circle_cuts/#{id}.png")
 
-update = (data) ->
-    selected = null
-    update_page_info data.info
-    for circle, i in data.circles
-        update_cell(i, circle)
-
-update_cell = (num, circle) ->
-    img = image circle.id
-    a = $("<a>").attr("href", "#").html img
-    box = $("<div>").append(a).append("#{circle.block.name} #{circle.space_no} #{circle.author}")
-    $("#box_#{num}").html(box)
+generate_cell = (num, circle) ->
+    container = $("<div>").attr("class", "span2").attr("id", "circle_index_#{num}")
+    info = $("<div>").attr("class", "circle-info").html("#{circle.block.name} #{circle.space_no} #{circle.author}")
+    a = $("<a>").attr("href", "#").append circle_cut_tag(circle.id)
+    box = $("<div>").attr("class", "circle-box").append(a).append(info)
+    container.html(box)
     a.click ->
-        view(circle)
+        select_cursor(num)
     box.css("background-color", "#{colors[circle.checklist.color_id]}") if circle.checklist
+    container
 
 coloring_circle_info = (color) ->
     $("#circle_info").css('border-color', "#{color}")
 
 checker_event = (e) ->
-    if selected
-        key = e.which
-        if 49 <= key && key <= 57 # number
-            color_id = key - 48
-            coloring_circle_info colors[color_id]
-            console.log color_id
-            $.ajax "/checklists/#{selected}/#{color_id}",
-                type: 'PUT',
-                success: (data) ->
-        else if key == 27 || key == 8 || key == 48 # del , escape, 0
-            coloring_circle_info ''
-            $.ajax "/checklists/#{selected}",
-                type: 'DELETE',
-                success: (data) ->
-selected = null
+    circle = current_circles[cursor]
+    key = e.which
+    if 49 <= key && key <= 57 # number
+        color_id = key - 48
+        coloring_circle_info colors[color_id]
+        $.ajax "/checklists/#{circle.id}/#{color_id}",
+            type: 'PUT',
+            success: (data) ->
+    else if key == 27 || key == 8 || key == 48 # del , escape, 0
+        coloring_circle_info ''
+        $.ajax "/checklists/#{circle.id}",
+            type: 'DELETE',
+            success: (data) ->
 
 bind_keys = (cond) ->
     $("body").keydown (e) ->
@@ -134,7 +155,6 @@ bind_keys = (cond) ->
     $("body").keydown checker_event
 
 view = (circle) ->
-    selected = circle.id
     $("body").unbind('keydown', 'checker_event')
     $("#circle_name").html circle.name
     if circle.checklist
@@ -142,7 +162,7 @@ view = (circle) ->
     else
         coloring_circle_info ''
     $("#circle_description").html circle.description
-    $("#circle_cut").html image(circle.id)
+    $("#circle_cut").html circle_cut_tag(circle.id)
     $("#circle_author").html circle.author
     $("#circle_space").html "Day #{circle.day}: #{circle.block.name}#{circle.space_no}"
 
