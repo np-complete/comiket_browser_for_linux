@@ -10,11 +10,7 @@
   .row
     #page_info
   .row
-    .span9
-      - 1.upto 4 do |x|
-        .row
-          - 1.upto 4 do |y|
-            .span2.circle_box{:id => "box_#{(x - 1) * 4 + (y - 1)}"}
+    .span9#circles
     .span3
       #colors.well
         %h3 colors
