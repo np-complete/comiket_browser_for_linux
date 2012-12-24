@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 require 'csv'
 class ChecklistDumper
+
+  COMIKET_NUMBER = 83
+
   def self.dump
     CSV do |csv|
-      csv << ["Header","ComicMarketCD-ROMCatalog","ComicMarket82","UTF-8","LinCCV"]
+      csv << ["Header","ComicMarketCD-ROMCatalog","ComicMarket#{COMIKET_NUMBER}","UTF-8","LinCCV"]
       days = %w{× 金 土 日}
       west_block_id = Block.find_by_name('あ').id
       Color.all.each do |color|

@@ -9,6 +9,8 @@ require 'sass'
 
 require_relative 'db/helper'
 
+COMIKET_NUMBER = 83
+
 get '/' do
   haml :index
 end
@@ -22,7 +24,7 @@ get '/circles' do
 
   offset = nums * page
 
-  circles = Circle.includes([:block, :checklist]).order('block_id, space_no').where(comiket_no: 82, day: day)
+  circles = Circle.includes([:block, :checklist]).order('block_id, space_no').where(comiket_no: COMIKET_NUMBER, day: day)
 
   circles = circles.where(block_id: block_id) if block_id
   total_count = circles.count
@@ -81,7 +83,7 @@ put '/checklists/:id/:color_id' do
     checklist = Checklist.find_by_circle_id(params[:id])
     checklist.update_attributes(color_id: params[:color_id])
   else
-    checklist = Checklist.create(circle_id: params[:id], color_id: params[:color_id], comiket_no: 82)
+    checklist = Checklist.create(circle_id: params[:id], color_id: params[:color_id], comiket_no: COMIKET_NUMBER)
   end
   checklist.to_json
 end

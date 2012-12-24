@@ -5,6 +5,9 @@ require 'kconv'
 require 'csv'
 
 desc 'setup'
+
+COMIKET_NUMBER = 83
+
 task :setup do
   dvd_path = ARGV.pop
   raise 'Usage: rake setup /path/to/dvd' if dvd_path == 'setup'
@@ -40,7 +43,7 @@ namespace :db do
 
   task :install_block, :dvd_path do |t, args|
     Rake::Task['db:migrate'].invoke
-    data_file = File.expand_path('DATA82/CDATA/C82MAP.TXT', args[:dvd_path])
+    data_file = File.expand_path("DATA#{COMIKET_NUMBER}/CDATA/C#{COMIKET_NUMBER}MAP.TXT", args[:dvd_path])
     CSV.open(data_file, col_sep: "\t", encoding: 'sjis') do |csv|
       blocks = csv.readlines.map{|row| row[0].toutf8 }.uniq
       blocks.each{ |block| Block.create(:name => block) }
@@ -50,7 +53,7 @@ namespace :db do
   desc 'install circle info'
   task :install, :dvd_path do |t, args|
     Rake::Task['db:migrate'].invoke
-    data_file = File.expand_path('DATA82/CDATA/C82ROM.TXT', args[:dvd_path])
+    data_file = File.expand_path("DATA#{COMIKET_NUMBER}/CDATA/C#{COMIKET_NUMBER}ROM.TXT", args[:dvd_path])
     blocks = Block.all.map {|x| [x.name, x.id]}
     days = {'×' => 0, '金' => 1, '土' => 2, '日' => 3}
     require_relative 'db/helper'
@@ -58,11 +61,11 @@ namespace :db do
     # Circle.delete_all
     CSV.foreach(data_file, col_sep: "\t", encoding: 'sjis', quote_char: '$' ) do |row|
       row.map! {|x| x.toutf8 if x.instance_of? String }
-      circle = Circle.find_by_circle_id_and_comiket_no(row[0].to_i, 82)
+      circle = Circle.find_by_circle_id_and_comiket_no(row[0].to_i, COMIKET_NUMBER)
       attrs = {}
       attrs[:circle_id]          = row[0].to_i
       block = blocks.assoc(row[5])
-      attrs[:comiket_no]  = 82
+      attrs[:comiket_no]  = COMIKET_NUMBER
       attrs[:page]        = row[1]
       attrs[:cut_index]   = row[2]
       attrs[:day]         = days[row[3]]
@@ -96,7 +99,7 @@ namespace :setup do
   end
 
   task :copy_circle_cuts, :circle_cuts_dir, :dvd_path do |t, args|
-    zip = File.expand_path('DATA82N/C082CUTH.CCZ', args[:dvd_path])
+    zip = File.expand_path("DATA#{COMIKET_NUMBER}N/C0#{COMIKET_NUMBER}CUTH.CCZ", args[:dvd_path])
     `unzip #{zip} -d #{args[:circle_cuts_dir]}`
     FileUtils.chmod(0644, Dir.glob(File.join(args[:circle_cuts_dir], '*')))
   end
