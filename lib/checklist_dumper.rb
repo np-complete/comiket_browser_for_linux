@@ -7,7 +7,7 @@ class ChecklistDumper
   def self.dump
     CSV do |csv|
       csv << ["Header","ComicMarketCD-ROMCatalog","ComicMarket#{COMIKET_NUMBER}","UTF-8","LinCCV"]
-      days = %w{× 金 土 日}
+      days = %w{× 土 日 月}
       west_block_id = Block.find_by_name('あ').id
       Color.all.each do |color|
         csv << ["Color", color.id, color.color, color.color, color.title]
@@ -26,7 +26,7 @@ class ChecklistDumper
           }
                 end
 
-        csv << ["Circle", check.circle_id, check.color_id,
+        csv << ["Circle", check.circle.circle_id, check.color_id,
           space[:page], space[:cut_index],
           days[check.circle.day.to_i], space[:area], space[:block], space[:space_no],
           check.circle.genre_code.to_i,

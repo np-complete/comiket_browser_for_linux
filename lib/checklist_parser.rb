@@ -70,7 +70,8 @@ class ChecklistParser
 
   private
   def convert_from_old_data(name, author, color_id, memo)
-    circle = Circle.find_by_name(name) || Circle.find_by_author(author)
+    circles = Circle.where(comiket_no: COMIKET_NUMBER)
+    circle = circles.where(name: name).first || circles.where(author: author).first
     if circle
       Checklist.create(circle_id: circle.id, color_id: color_id.to_i, memo: memo, comiket_no: COMIKET_NUMBER)  unless checked_circles.include?(circle.id)
     else
