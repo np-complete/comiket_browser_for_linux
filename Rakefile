@@ -55,11 +55,11 @@ namespace :db do
     Rake::Task['db:migrate'].invoke
     data_file = File.expand_path("DATA#{COMIKET_NUMBER}/CDATA/C#{COMIKET_NUMBER}ROM.TXT", args[:dvd_path])
     blocks = Block.all.map {|x| [x.name, x.id]}
-    days = {'×' => 0, '金' => 1, '土' => 2, '日' => 3}
+    days = {'×' => 0, '土' => 1, '日' => 2, '月' => 3}
     require_relative 'db/helper'
 
     # Circle.delete_all
-    CSV.foreach(data_file, col_sep: "\t", encoding: 'sjis', quote_char: '$' ) do |row|
+    CSV.foreach(data_file, col_sep: "\t", encoding: 'sjis', quote_char: "\t" ) do |row|
       row.map! {|x| x.toutf8 if x.instance_of? String }
       circle = Circle.find_by_circle_id_and_comiket_no(row[0].to_i, COMIKET_NUMBER)
       attrs = {}
