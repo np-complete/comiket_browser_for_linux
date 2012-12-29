@@ -12,7 +12,7 @@ class ChecklistDumper
       Color.all.each do |color|
         csv << ["Color", color.id, color.color, color.color, color.title]
       end
-      Checklist.joins(:circle).each do |check|
+      Checklist.joins(:circle).where(comiket_no: COMIKET_NUMBER).each do |check|
         space = case check.circle.block
                 when nil
                   {page: nil, cut_index: nil, block: '×', area: '×', space_no: 'XX'}
