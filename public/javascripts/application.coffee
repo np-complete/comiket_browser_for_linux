@@ -77,7 +77,7 @@ move_prev = ->
 move_cursor = (dir) ->
     switch dir
         when "up"
-            if cursor > columns
+            if cursor >= columns
                 select_cursor(cursor - columns)
             else
                 move_prev()
@@ -140,19 +140,20 @@ checker_event = (e) ->
 
 bind_keys = (cond) ->
     $("body").keydown (e) ->
-        c = String.fromCharCode e.which
-        switch c
+        key_code = e.which
+        key_code = String.fromCharCode e.which unless key_code >= 37 && key_code <= 40
+        switch key_code
             when "N"
                 move_next()
             when "P"
                 move_prev()
-            when "J"
+            when "J", "S", 40
                 move_cursor "down"
-            when "K"
+            when "K", "W", 38
                 move_cursor "up"
-            when "H"
+            when "H", "A", 37
                 move_cursor "left"
-            when "L"
+            when "L", "D", 39
                 move_cursor "right"
     $("body").keydown checker_event
 
