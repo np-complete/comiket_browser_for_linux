@@ -1,5 +1,5 @@
 class CreateChecklists < ActiveRecord::Migration
-  def change
+  def self.up
     create_table :checklists do |t|
       t.integer :comiket_no
       t.integer :circle_id
@@ -9,12 +9,9 @@ class CreateChecklists < ActiveRecord::Migration
     end
     add_index :checklists, [:comiket_no, :circle_id]
     add_index :checklists, :color_id
+  end
 
-
-    create_table :colors do |t|
-      t.string :color
-      t.string :title
-      t.timestamps
-    end
+  def self.down
+    drop_table :checklists
   end
 end
