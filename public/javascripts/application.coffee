@@ -14,17 +14,19 @@ update_circles_view = ->
             $("#circles").append generate_cell(i, circle)
         reset_cursor()
 
-fetch_circles_as_next = (cond = {}) ->
-    fetch_circles cond, (data) ->
-        next_circles = data.circles
-        next_cond = data.cond
-        next_info = data.info
+fetch_circles_as_next = (cond = null) ->
+    if cond
+        fetch_circles cond, (data) ->
+            next_circles = data.circles
+            next_cond = data.cond
+            next_info = data.info
 
-fetch_circles_as_prev = (cond = {}) ->
-    fetch_circles cond, (data) ->
-        prev_circles = data.circles
-        prev_cond = data.cond
-        prev_info = data.info
+fetch_circles_as_prev = (cond = null) ->
+    if cond
+        fetch_circles cond, (data) ->
+            prev_circles = data.circles
+            prev_cond = data.cond
+            prev_info = data.info
 
 fetch_circles_as_current = (cond = {}, func = null) ->
     fetch_circles cond, (data) ->
