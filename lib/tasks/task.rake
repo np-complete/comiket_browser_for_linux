@@ -1,13 +1,8 @@
 # -*- coding: utf-8 -*-
-require 'rake'
-require 'active_record'
-require 'kconv'
-require 'csv'
-
-desc 'setup'
 
 COMIKET_NUMBER = 83
 
+desc 'setup'
 task :setup do
   dvd_path = ARGV.pop
   raise 'Usage: rake setup /path/to/dvd' if dvd_path == 'setup'
@@ -18,7 +13,6 @@ task :setup do
 end
 
 namespace :checklist do
-  require_relative 'db/helper'
   desc 'load checklist csv file'
   task :load, :filepath do |t, args|
     require_relative 'lib/checklist_parser'

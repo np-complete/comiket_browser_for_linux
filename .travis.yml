@@ -1,0 +1,5 @@
+language: ruy
+rvm: 1.9.3
+script:
+  - padrino rake ar:migrate
+  - padrino rake spec
