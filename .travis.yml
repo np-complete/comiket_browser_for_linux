@@ -1,5 +1,7 @@
 language: ruy
-rvm: 1.9.3
+rvm:
+  - 1.9.3
+  - 2.0.0
 script:
   - padrino rake ar:migrate
   - padrino rake spec
