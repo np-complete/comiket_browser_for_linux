@@ -7,7 +7,7 @@ ComiketBrowser.controllers :circles do
     day = (params[:day] || 1).to_i
     block_id = params[:block_id].try(:to_i)
 
-    block = block_id ? Block.find(block_id) : nil
+    block = block_id ? Block.find_and_day(block_id, day) : nil
 
     return 400 if page < 0 || day < 1
 
@@ -18,13 +18,13 @@ ComiketBrowser.controllers :circles do
     circles = circles.limit(nums).offset(offset)
 
     prev_cond = if page == 0
-                  block ?  {page: 0, day: day, block_id: block.prev_block_id(day)} : nil
+                  block ?  {page: block.prev_block.pages - 1, day: day, block_id: block.prev_block.id} : nil
                 else
                   {page: page - 1, day: day, block_id: block_id}.reject{ |k,v| v.nil? }
                 end
 
     next_cond = if total_count <= offset + nums
-                  block ? {page: 0, day: day, block_id: block.next_block_id(day)} : nil
+                  block ? {page: 0, day: day, block_id: block.next_block.id} : nil
                 else
                   {page: page + 1, day: day, block_id: block_id}.reject{ |k,v| v.nil? }
                 end
