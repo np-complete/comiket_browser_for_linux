@@ -1,7 +1,6 @@
 language: ruy
 rvm:
-  - 1.9.3
   - 2.0.0
 script:
-  - padrino rake ar:migrate
-  - padrino rake spec
+  - PADRINO_ENV=test bundle exec padrino rake ar:migrate
+  - bundle exec padrino rake spec
