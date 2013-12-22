@@ -1,6 +1,5 @@
+require_relative './comiket'
 class ChecklistParser
-
-  COMIKET_NUMBER = 83
 
   attr_accessor :encode, :convert_mode
   def initialize
@@ -17,7 +16,7 @@ class ChecklistParser
       self.encode = :sjis
     end
 
-    self.convert_mode = true unless row[2] == "ComicMarket#{COMIKET_NUMBER}"
+    self.convert_mode = true unless row[2] == "ComicMarket#{Comiket::No}"
   end
 
   def parse_color(row)
@@ -48,7 +47,7 @@ class ChecklistParser
   end
 
   def checked_circles
-    @checked_circles ||= Checklist.where(comiket_no: COMIKET_NUMBER).map(&:circle_id)
+    @checked_circles ||= Checklist.where(comiket_no: Comiket::No).map(&:circle_id)
   end
 
   def self.parse(csv)
@@ -70,10 +69,10 @@ class ChecklistParser
 
   private
   def convert_from_old_data(name, author, color_id, memo)
-    circles = Circle.where(comiket_no: COMIKET_NUMBER)
+    circles = Circle.where(comiket_no: Comiket::No)
     circle = circles.where(name: name).first || circles.where(author: author).first
     if circle
-      Checklist.create(circle_id: circle.id, color_id: color_id.to_i, memo: memo, comiket_no: COMIKET_NUMBER)  unless checked_circles.include?(circle.id)
+      Checklist.create(circle_id: circle.id, color_id: color_id.to_i, memo: memo, comiket_no: Comiket::No)  unless checked_circles.include?(circle.id)
     else
       Unknown.create(name: name, author: author, color_id: color_id, memo: memo)
     end
