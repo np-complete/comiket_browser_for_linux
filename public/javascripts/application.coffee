@@ -106,13 +106,13 @@ select_cursor = (num) ->
     $("#circle_index_#{num} .circle-box").addClass "selected-circle"
     view current_circles[cursor]
 
-circle_cut_tag = (id) ->
-    $("<img>").attr("src", "/images/circle_cuts/#{id}.png")
+circle_cut_tag = (circle) ->
+    $("<img>").attr("src", "/images/circle_cuts/c#{circle.comiket_no}/#{circle.circle_id}.png")
 
 generate_cell = (num, circle) ->
     container = $("<div>").attr("class", "span2").attr("id", "circle_index_#{num}")
     info = $("<div>").attr("class", "circle-info").html("#{circle.block.name} #{circle.space_no} #{circle.author}")
-    a = $("<a>").attr("href", "#").append circle_cut_tag(circle.circle_id)
+    a = $("<a>").attr("href", "#").append circle_cut_tag(circle)
     box = $("<div>").attr("class", "circle-box").append(a).append(info)
     container.html(box)
     a.click ->
@@ -165,7 +165,7 @@ view = (circle) ->
     else
         coloring_circle_info ''
     $("#circle_description").html circle.description
-    $("#circle_cut").html circle_cut_tag(circle.circle_id)
+    $("#circle_cut").html circle_cut_tag(circle)
     $("#circle_author").html circle.author
     $("#circle_space").html "Day #{circle.day}: #{circle.block.name}#{circle.space_no}"
 

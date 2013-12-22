@@ -7,7 +7,7 @@ desc 'setup'
 task :setup do
   dvd_path = ARGV.pop
   raise 'Usage: rake setup /path/to/dvd' if dvd_path == 'setup'
-  circle_cuts_dir = File.expand_path('public/images/circle_cuts')
+  circle_cuts_dir = File.expand_path("public/images/circle_cuts/c#{Comiket::No}")
   Rake::Task['setup:create_directories'].invoke(circle_cuts_dir)
   Rake::Task['setup:copy_circle_cuts'].invoke(circle_cuts_dir, dvd_path)
   Rake::Task['db:install'].invoke(dvd_path)
@@ -35,7 +35,6 @@ end
 
 namespace :db do
   task :migrate do
-    require_relative 'db/helper'
     ActiveRecord::Migrator.migrate('db/migrate/')
   end
 
@@ -53,7 +52,7 @@ namespace :db do
     Rake::Task['db:migrate'].invoke
     data_file = File.expand_path("DATA#{Comiket::No}/CDATA/C#{Comiket::No}ROM.TXT", args[:dvd_path])
     blocks = Block.all.map {|x| [x.name, x.id]}
-    days = {'×' => 0, '土' => 1, '日' => 2, '月' => 3}
+    days = {'×' => 0, '日' => 1, '月' => 2, '火' => 3}
 
     # Circle.delete_all
     Circle.transaction do
@@ -104,7 +103,7 @@ namespace :setup do
   end
 
   task :copy_circle_cuts2, :dvd_path do |t, args|
-    circle_cuts_dir = File.expand_path('../../../public/images/circle_cuts', __FILE__)
+    circle_cuts_dir = File.expand_path("../../../public/images/circle_cuts/c#{Comiket::No}", __FILE__)
     zip = File.expand_path("DATA#{Comiket::No}N/C0#{Comiket::No}CUTH.CCZ", args[:dvd_path])
     `unzip #{zip} -d #{circle_cuts_dir}`
     FileUtils.chmod(0644, Dir.glob(File.join(circle_cuts_dir, '*')))
