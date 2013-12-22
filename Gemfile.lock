@@ -92,6 +92,9 @@ GEM
       coderay (~> 1.0.5)
       method_source (~> 0.8)
       slop (~> 3.4)
+    pry-doc (0.4.6)
+      pry (>= 0.9)
+      yard (>= 0.8)
     rack (1.5.2)
     rack-coffee (1.0.0)
       coffee-script
@@ -133,6 +136,7 @@ GEM
     tzinfo (0.3.37)
     url_mount (0.2.1)
       rack
+    yard (0.8.7)
 
 PLATFORMS
   ruby
@@ -147,6 +151,8 @@ DEPENDENCIES
   haml
   hashr
   padrino (= 0.11.0)
+  pry
+  pry-doc
   rack-coffee
   rack-test
   rake
