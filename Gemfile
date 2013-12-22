@@ -28,4 +28,6 @@ group :development, :test do
   gem 'rb-fchange', :require => false
 
   gem 'ruby_gntp'
+  gem 'pry'
+  gem 'pry-doc'
 end
