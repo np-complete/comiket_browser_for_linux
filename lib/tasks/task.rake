@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-COMIKET_NUMBER = 84
+require 'csv'
+require 'nkf'
+require_relative '../comiket'
 
 desc 'setup'
 task :setup do
@@ -14,7 +16,7 @@ end
 namespace :checklist do
   desc 'load checklist csv file'
   task :load, :filepath do |t, args|
-    require_relative 'lib/checklist_parser'
+    require_relative '../checklist_parser'
     path = File.expand_path(args[:filepath])
     CSV.open(path, :encoding => NKF.guess(File.read(path))) do |csv|
       parser = ChecklistParser.parse(csv)
@@ -22,9 +24,12 @@ namespace :checklist do
   end
 
   desc 'dump checklist csv file'
-  task :dump do |t, args|
-    require_relative 'lib/checklist_dumper'
-    ChecklistDumper.dump
+  task :dump, :filepath do |t, args|
+    require_relative '../checklist_dumper'
+    path = File.expand_path(args[:filepath])
+    File.open(path, 'w') do |f|
+      f.puts ChecklistDumper.dump
+    end
   end
 end
 
@@ -36,7 +41,7 @@ namespace :db do
 
   task :install_block, :dvd_path do |t, args|
     Rake::Task['db:migrate'].invoke
-    data_file = File.expand_path("DATA#{COMIKET_NUMBER}/CDATA/C#{COMIKET_NUMBER}MAP.TXT", args[:dvd_path])
+    data_file = File.expand_path("DATA#{Comiket::No}/CDATA/C#{Comiket::No}MAP.TXT", args[:dvd_path])
     CSV.open(data_file, col_sep: "\t", encoding: 'sjis') do |csv|
       blocks = csv.readlines.map{|row| row[0].encode("UTF-8") }.uniq
       blocks.each{ |block| Block.create(:name => block) }
@@ -46,20 +51,19 @@ namespace :db do
   desc 'install circle info'
   task :install, :dvd_path do |t, args|
     Rake::Task['db:migrate'].invoke
-    data_file = File.expand_path("DATA#{COMIKET_NUMBER}/CDATA/C#{COMIKET_NUMBER}ROM.TXT", args[:dvd_path])
+    data_file = File.expand_path("DATA#{Comiket::No}/CDATA/C#{Comiket::No}ROM.TXT", args[:dvd_path])
     blocks = Block.all.map {|x| [x.name, x.id]}
     days = {'×' => 0, '土' => 1, '日' => 2, '月' => 3}
-
 
     # Circle.delete_all
     Circle.transaction do
       CSV.foreach(data_file, col_sep: "\t", encoding: 'sjis', quote_char: "\t" ) do |row|
         row.map! {|x| x.encode("UTF-8") if x.instance_of? String }
-        circle = Circle.find_by_circle_id_and_comiket_no(row[0].to_i, COMIKET_NUMBER)
+        circle = Circle.find_by_circle_id_and_comiket_no(row[0].to_i, Comiket::No)
         attrs = {}
         attrs[:circle_id]          = row[0].to_i
         block = blocks.assoc(row[5])
-        attrs[:comiket_no]  = COMIKET_NUMBER
+        attrs[:comiket_no]  = Comiket::No
         attrs[:page]        = row[1]
         attrs[:cut_index]   = row[2]
         attrs[:day]         = days[row[3]]
@@ -94,9 +98,15 @@ namespace :setup do
   end
 
   task :copy_circle_cuts, :circle_cuts_dir, :dvd_path do |t, args|
-    zip = File.expand_path("DATA#{COMIKET_NUMBER}N/C0#{COMIKET_NUMBER}CUTH.CCZ", args[:dvd_path])
+    zip = File.expand_path("DATA#{Comiket::No}N/C0#{Comiket::No}CUTH.CCZ", args[:dvd_path])
     `unzip #{zip} -d #{args[:circle_cuts_dir]}`
     FileUtils.chmod(0644, Dir.glob(File.join(args[:circle_cuts_dir], '*')))
   end
 
+  task :copy_circle_cuts2, :dvd_path do |t, args|
+    circle_cuts_dir = File.expand_path('../../../public/images/circle_cuts', __FILE__)
+    zip = File.expand_path("DATA#{Comiket::No}N/C0#{Comiket::No}CUTH.CCZ", args[:dvd_path])
+    `unzip #{zip} -d #{circle_cuts_dir}`
+    FileUtils.chmod(0644, Dir.glob(File.join(circle_cuts_dir, '*')))
+  end
 end

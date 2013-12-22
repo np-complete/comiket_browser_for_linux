@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
+require_relative './comiket'
 require 'csv'
 class ChecklistDumper
 
-  COMIKET_NUMBER = 83
-
   def self.dump
-    CSV do |csv|
-      csv << ["Header","ComicMarketCD-ROMCatalog","ComicMarket#{COMIKET_NUMBER}","UTF-8","LinCCV"]
+    CSV.generate do |csv|
+      csv << ["Header","ComicMarketCD-ROMCatalog","ComicMarket#{Comiket::No}","UTF-8","LinCCV"]
       days = %w{× 土 日 月}
       west_block_id = Block.find_by_name('あ').id
       Color.all.each do |color|
         csv << ["Color", color.id, color.color, color.color, color.title]
       end
-      Checklist.joins(:circle).where(comiket_no: COMIKET_NUMBER).each do |check|
+      Checklist.joins(:circle).where(comiket_no: Comiket::No).each do |check|
         space = case check.circle.block
                 when nil
                   {page: nil, cut_index: nil, block: '×', area: '×', space_no: 'XX'}
