@@ -107,7 +107,7 @@ select_cursor = (num) ->
     view current_circles[cursor]
 
 circle_cut_tag = (circle) ->
-    $("<img>").attr("src", "/images/circle_cuts/c#{circle.comiket_no}/#{circle.circle_id}.png")
+    $("<img>").attr("src", "/images/circle_cuts/c#{circle.comiket_no}/#{circle.circle_id}.PNG")
 
 generate_cell = (num, circle) ->
     container = $("<div>").attr("class", "span2").attr("id", "circle_index_#{num}")
