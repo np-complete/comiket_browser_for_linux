@@ -1,6 +1,6 @@
 class Block < ActiveRecord::Base
   attr_accessor :day
-  attr_accessible :name
+  attr_accessible :name, :comiket_no
 
   validates :name, uniqueness: true
 
