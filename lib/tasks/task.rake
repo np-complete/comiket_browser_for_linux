@@ -43,7 +43,7 @@ namespace :db do
     data_file = File.expand_path("DATA#{Comiket::No}/CDATA/C#{Comiket::No}MAP.TXT", args[:dvd_path])
     CSV.open(data_file, col_sep: "\t", encoding: 'sjis') do |csv|
       blocks = csv.readlines.map{|row| row[0].encode("UTF-8") }.uniq
-      blocks.each{ |block| Block.create(:name => block) }
+      blocks.each{ |block| Block.find_or_create_by(comiket_no: Comiket::No, name: block) }
     end
   end
 
@@ -51,8 +51,11 @@ namespace :db do
   task :install, :dvd_path do |t, args|
     Rake::Task['db:migrate'].invoke
     data_file = File.expand_path("DATA#{Comiket::No}/CDATA/C#{Comiket::No}ROM.TXT", args[:dvd_path])
-    blocks = Block.all.map {|x| [x.name, x.id]}
-    days = {'×' => 0, '日' => 1, '月' => 2, '火' => 3}
+    blocks = Block.where(comiket_no: Comiket::No).map {|x| [x.name, x.id]}
+    days = Comiket::Date.inject({}) do |res, d|
+      res[d] = Comiket::Date.index(d)
+      res
+    end
 
     # Circle.delete_all
     Circle.transaction do
