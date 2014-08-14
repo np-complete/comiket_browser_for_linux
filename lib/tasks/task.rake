@@ -16,11 +16,8 @@ end
 namespace :checklist do
   desc 'load checklist csv file'
   task :load, :filepath do |t, args|
-    require_relative '../checklist_parser'
-    path = File.expand_path(args[:filepath])
-    CSV.open(path, :encoding => NKF.guess(File.read(path))) do |csv|
-      parser = ChecklistParser.parse(csv)
-    end
+    Rake::Task["checklist:drop"].invoke
+    Rake::Task["checklist:merge"].invoke(args[:filepath])
   end
 
   desc 'dump checklist csv file'
@@ -30,6 +27,20 @@ namespace :checklist do
     File.open(path, 'w') do |f|
       f.puts ChecklistDumper.dump
     end
+  end
+
+  desc "merge checklist csv file"
+  task :merge, :filepath do |t, args|
+    require_relative '../checklist_parser'
+    path = File.expand_path(args[:filepath])
+    CSV.open(path, :encoding => NKF.guess(File.read(path))) do |csv|
+      parser = ChecklistParser.parse(csv)
+    end
+  end
+
+  task :drop do
+    Unknown.delete_all
+    Checklist.delete_all
   end
 end
 
