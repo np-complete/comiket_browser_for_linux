@@ -1,3 +1,4 @@
 class Color < ActiveRecord::Base
-  attr_accessible :id, :color, :title
+  validates :color, presence: true
+  validates :title, presence: true
 end
