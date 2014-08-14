@@ -50,6 +50,7 @@ namespace :db do
   desc 'install circle info'
   task :install, :dvd_path do |t, args|
     Rake::Task['db:migrate'].invoke
+    Rake::Task['db:install_block'].invoke(args[:dvd_path])
     data_file = File.expand_path("DATA#{Comiket::No}/CDATA/C#{Comiket::No}ROM.TXT", args[:dvd_path])
     blocks = Block.where(comiket_no: Comiket::No).map {|x| [x.name, x.id]}
     days = Comiket::Date.inject({}) do |res, d|
