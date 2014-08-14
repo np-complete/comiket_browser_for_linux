@@ -10,7 +10,7 @@ gem 'activerecord', :require => "active_record"
 gem 'sqlite3'
 
 gem 'padrino', "0.11.0"
-
+gem 'therubyracer'
 gem 'hashr'
 
 group :development, :test do
