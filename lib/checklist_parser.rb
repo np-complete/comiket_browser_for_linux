@@ -34,15 +34,17 @@ class ChecklistParser
     if convert_mode
       convert_from_old_data(row[10], row[12], row[2], row[17])
     else
-      Checklist.create(circle_id: row[1].to_i, color_id: row[2].to_i, memo: row[17]) unless checked_circles.include?(row[1].to_i)
+      circle = Circle.where(circle_id: row[1].to_i).first!
+      Checklist.create(circle_id: circle.id, color_id: row[2].to_i, memo: row[17], comiket_no: Comiket::No) unless checked_circles.include?(circle.id)
     end
   end
 
   def parse_unknown(row)
+    _, name, _, author, memo, color_id = row
     if convert_mode
-      convert_from_old_data(row[1], row[3], row[5], row[4])
+      convert_from_old_data(name, author, color_id, memo)
     else
-      #none
+      Unknown.create(name: name, author: author, color_id: color_id, memo: memo)
     end
   end
 
