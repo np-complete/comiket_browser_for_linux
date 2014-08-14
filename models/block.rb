@@ -1,8 +1,8 @@
 class Block < ActiveRecord::Base
   attr_accessor :day
-  attr_accessible :name, :comiket_no
 
   validates :name, uniqueness: true
+  validates :comiket_no, presence: true
 
   def self.find_and_day(id, day, comiket_no = nil)
     block = Block.find(id)
