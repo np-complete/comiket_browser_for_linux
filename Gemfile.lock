@@ -100,11 +100,11 @@ GEM
     pry-doc (0.6.0)
       pry (~> 0.9)
       yard (~> 0.8)
-    rack (1.5.2)
+    rack (1.6.11)
     rack-coffee (1.0.3)
       coffee-script
       rack
-    rack-protection (1.5.3)
+    rack-protection (1.5.5)
       rack
     rack-test (0.6.2)
       rack (>= 1.0)
