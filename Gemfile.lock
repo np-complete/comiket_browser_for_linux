@@ -149,7 +149,7 @@ GEM
       thread_safe (~> 0.1)
     url_mount (0.2.1)
       rack
-    yard (0.8.7.4)
+    yard (0.9.20)
 
 PLATFORMS
   ruby
