@@ -28,7 +28,7 @@ GEM
     execjs (2.2.1)
     factory_girl (4.4.0)
       activesupport (>= 3.0.0)
-    ffi (1.9.3)
+    ffi (1.11.1)
     formatador (0.2.5)
     guard (1.8.3)
       formatador (>= 0.2.4)
